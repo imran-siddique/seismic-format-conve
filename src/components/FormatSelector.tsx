@@ -9,6 +9,7 @@ interface FormatSelectorProps {
 
 const SUPPORTED_FORMATS = [
   { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format 5 - Primary target', priority: true },
+  { value: 'OVDS', label: 'OVDS (OpenVDS)', description: 'Open Volumetric Data Standard - Azure optimized', priority: true, azure: true },
   { value: 'ZGY', label: 'ZGY (Petrel)', description: 'Azure Energy Data Services compatible format', priority: true, azure: true },
   { value: 'JSON', label: 'JSON', description: 'Web-friendly structured format' },
   { value: 'CSV', label: 'CSV', description: 'Comma-separated values' },

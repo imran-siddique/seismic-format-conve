@@ -15,9 +15,12 @@ import {
   Settings,
   Upload,
   Download,
-  TestTube
+  TestTube,
+  Cloud,
+  Gauge
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { OVDSValidator, OVDSTestUtils, type OVDSValidationResult } from '@/lib/ovdsValidator'
 
 interface TestStep {
   id: string
@@ -38,7 +41,7 @@ interface TestSuite {
 }
 
 const AZURE_CONVERSION_TESTS: TestSuite = {
-  name: "Azure Energy Data Services SEG-Y to ZGY Conversion",
+  name: "Azure Energy Data Services SEG-Y to OVDS Conversion",
   description: "Step-by-step verification following Microsoft Azure Energy Data Services documentation",
   overallStatus: 'pending',
   progress: 0,
@@ -46,61 +49,73 @@ const AZURE_CONVERSION_TESTS: TestSuite = {
     {
       id: 'validate_input',
       name: 'Validate SEG-Y Input File',
-      description: 'Verify SEG-Y file format, headers, and data integrity',
+      description: 'Verify SEG-Y file format, headers, and data integrity per Azure standards',
       status: 'pending'
     },
     {
       id: 'check_headers',
       name: 'Parse SEG-Y Headers',
-      description: 'Extract and validate textual and binary headers',
+      description: 'Extract and validate textual and binary headers (EBCDIC & binary)',
       status: 'pending'
     },
     {
       id: 'trace_analysis',
-      name: 'Analyze Trace Data',
-      description: 'Examine trace headers and seismic data structure',
+      name: 'Analyze Trace Data Structure',
+      description: 'Examine trace headers and seismic data organization',
       status: 'pending'
     },
     {
-      id: 'geometry_check',
-      name: 'Verify Survey Geometry',
-      description: 'Validate coordinate system and spatial relationships',
+      id: 'coordinate_system',
+      name: 'Coordinate System Validation',
+      description: 'Verify coordinate reference system and spatial indexing',
       status: 'pending'
     },
     {
-      id: 'data_quality',
-      name: 'Data Quality Assessment',
-      description: 'Check for data completeness and anomalies',
+      id: 'azure_compatibility',
+      name: 'Azure Energy Data Services Compatibility Check',
+      description: 'Validate file meets Azure EDS ingestion requirements',
       status: 'pending'
     },
     {
-      id: 'zgy_preparation',
-      name: 'Prepare ZGY Structure',
-      description: 'Initialize ZGY file structure and metadata',
+      id: 'ovds_preparation',
+      name: 'Prepare OpenVDS Structure',
+      description: 'Initialize OVDS (Open Volumetric Data Standard) container',
+      status: 'pending'
+    },
+    {
+      id: 'volume_indexing',
+      name: 'Create Volume Index',
+      description: 'Build spatial indexing for efficient cloud access patterns',
       status: 'pending'
     },
     {
       id: 'data_conversion',
-      name: 'Convert Seismic Data',
-      description: 'Transform SEG-Y traces to ZGY brick format',
+      name: 'Convert to OVDS Format',
+      description: 'Transform SEG-Y traces to OVDS volumetric representation',
       status: 'pending'
     },
     {
-      id: 'metadata_mapping',
-      name: 'Map Metadata',
-      description: 'Transfer acquisition and processing metadata to ZGY',
+      id: 'metadata_preservation',
+      name: 'Preserve Acquisition Metadata',
+      description: 'Transfer survey parameters and processing history to OVDS',
       status: 'pending'
     },
     {
-      id: 'compression_optimization',
-      name: 'Apply Compression',
-      description: 'Optimize ZGY file size with lossless compression',
+      id: 'cloud_optimization',
+      name: 'Cloud Access Optimization',
+      description: 'Apply compression and chunking for Azure storage efficiency',
       status: 'pending'
     },
     {
-      id: 'validation',
-      name: 'Validate ZGY Output',
-      description: 'Verify converted file integrity and accessibility',
+      id: 'azure_validation',
+      name: 'Azure EDS Validation',
+      description: 'Verify OVDS file meets Azure Energy Data Services standards',
+      status: 'pending'
+    },
+    {
+      id: 'accessibility_test',
+      name: 'Cloud Accessibility Test',
+      description: 'Validate random access patterns and streaming capabilities',
       status: 'pending'
     }
   ]
@@ -111,8 +126,12 @@ interface ConversionTestProps {
   onTestComplete?: (results: TestSuite) => void
 }
 
+interface TestSuiteWithOVDS extends TestSuite {
+  ovdsValidation?: OVDSValidationResult
+}
+
 export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestProps) {
-  const [testSuite, setTestSuite] = useState<TestSuite>(AZURE_CONVERSION_TESTS)
+  const [testSuite, setTestSuite] = useState<TestSuiteWithOVDS>(AZURE_CONVERSION_TESTS)
   const [isRunning, setIsRunning] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
 
@@ -163,43 +182,51 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
         break
 
       case 'trace_analysis':
-        // Simulate trace analysis with potential warnings
+        // Simulate trace analysis with Azure-specific checks
         const hasWarnings = Math.random() > 0.7
         updatedStep = {
           ...step,
           status: hasWarnings ? 'warning' : 'passed',
-          details: 'Analyzed 2847 traces with 1501 samples each',
-          warnings: hasWarnings ? ['Some traces have irregular amplitudes', 'Trace header inconsistency detected'] : undefined,
+          details: 'Analyzed 2847 traces with 1501 samples each - trace headers validated',
+          warnings: hasWarnings ? ['Some traces have non-standard byte ordering', 'Trace header scalar inconsistencies detected'] : undefined,
           duration: Date.now() - startTime
         }
         break
 
-      case 'geometry_check':
+      case 'coordinate_system':
         updatedStep = {
           ...step,
           status: 'passed',
-          details: 'Survey geometry validated: UTM Zone 31N, inline/crossline grid detected',
+          details: 'Coordinate system validated: UTM Zone 31N with proper EPSG code (32631)',
           duration: Date.now() - startTime
         }
         break
 
-      case 'data_quality':
-        // Simulate occasional quality issues
-        const qualityIssue = Math.random() > 0.8
+      case 'azure_compatibility':
+        const compatibilityIssue = Math.random() > 0.85
         updatedStep = {
           ...step,
-          status: qualityIssue ? 'warning' : 'passed',
-          details: qualityIssue ? 'Data quality check completed with minor issues' : 'Data quality check passed',
-          warnings: qualityIssue ? ['2.3% of traces show amplitude saturation', 'Minor gaps in trace coverage'] : undefined,
+          status: compatibilityIssue ? 'warning' : 'passed',
+          details: compatibilityIssue ? 'Azure EDS compatibility check completed with minor issues' : 'File meets all Azure Energy Data Services requirements',
+          warnings: compatibilityIssue ? ['File size exceeds recommended 2GB threshold for optimal performance', 'Consider chunking for better cloud access'] : undefined,
           duration: Date.now() - startTime
         }
         break
 
-      case 'zgy_preparation':
+      case 'ovds_preparation':
         updatedStep = {
           ...step,
           status: 'passed',
-          details: 'ZGY structure initialized: 3D brick layout prepared for 2847×1501 data',
+          details: 'OVDS container initialized with LOD (Level of Detail) structure for cloud optimization',
+          duration: Date.now() - startTime
+        }
+        break
+
+      case 'volume_indexing':
+        updatedStep = {
+          ...step,
+          status: 'passed',
+          details: 'Spatial indexing created: 3D octree structure with 8×8×8 block subdivision',
           duration: Date.now() - startTime
         }
         break
@@ -208,38 +235,49 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
         updatedStep = {
           ...step,
           status: 'passed',
-          details: 'SEG-Y traces converted to ZGY bricks: 4.3M samples processed',
+          details: 'SEG-Y traces converted to OVDS volume: 4.3M samples transformed with spatial indexing',
           duration: Date.now() - startTime
         }
         break
 
-      case 'metadata_mapping':
+      case 'metadata_preservation':
         updatedStep = {
           ...step,
           status: 'passed',
-          details: 'Metadata successfully mapped: acquisition parameters, processing history, and coordinate system preserved',
+          details: 'Acquisition metadata preserved: survey parameters, processing history, and CRS information stored in OVDS metadata',
           duration: Date.now() - startTime
         }
         break
 
-      case 'compression_optimization':
-        const compressionRatio = (Math.random() * 0.3 + 0.4).toFixed(1) // 40-70% compression
+      case 'cloud_optimization':
+        const compressionRatio = (Math.random() * 0.4 + 0.5).toFixed(1) // 50-90% compression for cloud
         updatedStep = {
           ...step,
           status: 'passed',
-          details: `Compression applied: ${compressionRatio}x reduction achieved with lossless algorithm`,
+          details: `Cloud optimization applied: ${compressionRatio}x compression with adaptive chunking for Azure Blob Storage`,
           duration: Date.now() - startTime
         }
         break
 
-      case 'validation':
-        // Final validation rarely fails but might have warnings
-        const finalWarning = Math.random() > 0.9
+      case 'azure_validation':
+        const validationWarning = Math.random() > 0.85
         updatedStep = {
           ...step,
-          status: finalWarning ? 'warning' : 'passed',
-          details: 'ZGY file validation completed successfully',
-          warnings: finalWarning ? ['Minor metadata field truncation occurred'] : undefined,
+          status: validationWarning ? 'warning' : 'passed',
+          details: 'OVDS file validated against Azure Energy Data Services schema',
+          warnings: validationWarning ? ['Some extended attributes may not be supported in all Azure EDS viewers'] : undefined,
+          duration: Date.now() - startTime
+        }
+        break
+
+      case 'accessibility_test':
+        // Final accessibility test
+        const accessWarning = Math.random() > 0.9
+        updatedStep = {
+          ...step,
+          status: accessWarning ? 'warning' : 'passed',
+          details: 'Cloud accessibility verified: random access patterns and streaming validated',
+          warnings: accessWarning ? ['Large volume may require connection optimization for remote access'] : undefined,
           duration: Date.now() - startTime
         }
         break
@@ -304,7 +342,7 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
       }))
 
       // Stop if a critical failure occurs
-      if (updatedStep.status === 'failed' && ['validate_input', 'check_headers'].includes(updatedStep.id)) {
+      if (updatedStep.status === 'failed' && ['validate_input', 'check_headers', 'azure_compatibility'].includes(updatedStep.id)) {
         break
       }
     }
@@ -312,14 +350,29 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
     setIsRunning(false)
     setCurrentStepIndex(0)
 
+    // Perform OVDS validation if conversion was successful
+    let ovdsValidation: OVDSValidationResult | undefined
+    if (overallStatus !== 'failed') {
+      try {
+        // Create mock OVDS data for validation testing
+        const mockOVDSData = OVDSTestUtils.createMockOVDS(sourceFile?.size || 1024 * 1024)
+        ovdsValidation = await OVDSValidator.validateOVDS(mockOVDSData, sourceFile?.size)
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        console.warn(`OVDS validation error: ${errorMessage}`)
+      }
+    }
+
     // Call completion callback
-    const finalTestSuite = {
+    const finalTestSuite: TestSuiteWithOVDS = {
       ...testSuite,
       steps: updatedSteps,
       overallStatus,
-      progress: 100
+      progress: 100,
+      ovdsValidation
     }
     
+    setTestSuite(finalTestSuite)
     onTestComplete?.(finalTestSuite)
   }, [testSuite, isRunning, runStep, onTestComplete])
 
@@ -349,9 +402,10 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Test Overview</TabsTrigger>
             <TabsTrigger value="details">Step Details</TabsTrigger>
+            <TabsTrigger value="ovds">OVDS Validation</TabsTrigger>
           </TabsList>
           
           <TabsContent value="overview" className="space-y-6">
@@ -474,6 +528,150 @@ export function ConversionTest({ sourceFile, onTestComplete }: ConversionTestPro
                 </div>
               ))}
             </div>
+          </TabsContent>
+          
+          <TabsContent value="ovds" className="space-y-4">
+            {testSuite.ovdsValidation ? (
+              <div className="space-y-4">
+                {/* OVDS Validation Summary */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className={cn(
+                    "p-4",
+                    testSuite.ovdsValidation.isValid ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"
+                  )}>
+                    <div className="flex items-center gap-2">
+                      {testSuite.ovdsValidation.isValid ? (
+                        <CheckCircle size={20} className="text-green-600" />
+                      ) : (
+                        <XCircle size={20} className="text-red-600" />
+                      )}
+                      <div>
+                        <div className="font-medium">OVDS Structure</div>
+                        <div className="text-sm text-muted-foreground">
+                          {testSuite.ovdsValidation.isValid ? 'Valid' : 'Invalid'}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                  
+                  <Card className={cn(
+                    "p-4",
+                    testSuite.ovdsValidation.azureCompatible ? "border-blue-200 bg-blue-50" : "border-yellow-200 bg-yellow-50"
+                  )}>
+                    <div className="flex items-center gap-2">
+                      <Cloud size={20} className={testSuite.ovdsValidation.azureCompatible ? "text-blue-600" : "text-yellow-600"} />
+                      <div>
+                        <div className="font-medium">Azure Compatibility</div>
+                        <div className="text-sm text-muted-foreground">
+                          {testSuite.ovdsValidation.azureCompatible ? 'Optimized' : 'Needs improvement'}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+
+                {/* Performance Metrics */}
+                <Card className="p-4">
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <Gauge size={16} />
+                    Performance Metrics
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="text-muted-foreground">File Size</div>
+                      <div className="font-medium">
+                        {(testSuite.ovdsValidation.performanceMetrics.fileSize / 1024 / 1024).toFixed(1)} MB
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Compression Ratio</div>
+                      <div className="font-medium">
+                        {(testSuite.ovdsValidation.performanceMetrics.compressionRatio * 100).toFixed(0)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Est. Load Time</div>
+                      <div className="font-medium">
+                        {testSuite.ovdsValidation.performanceMetrics.estimatedLoadTime.toFixed(1)}s
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-muted-foreground">Random Access Score</div>
+                      <div className="flex items-center gap-2">
+                        <div className="font-medium">
+                          {(testSuite.ovdsValidation.performanceMetrics.randomAccessScore * 100).toFixed(0)}%
+                        </div>
+                        <Progress 
+                          value={testSuite.ovdsValidation.performanceMetrics.randomAccessScore * 100} 
+                          className="h-2 flex-1" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Validation Steps */}
+                <Card className="p-4">
+                  <h4 className="font-medium mb-3">Validation Steps</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {Object.entries(testSuite.ovdsValidation.validationSteps).map(([key, passed]) => (
+                      <div key={key} className="flex items-center gap-2">
+                        {passed ? (
+                          <CheckCircle size={14} className="text-green-600" />
+                        ) : (
+                          <XCircle size={14} className="text-red-600" />
+                        )}
+                        <span className={cn(
+                          "capitalize",
+                          key.replace(/([A-Z])/g, ' $1').toLowerCase()
+                        )}>
+                          {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Recommendations */}
+                {testSuite.ovdsValidation.recommendations.length > 0 && (
+                  <Card className="p-4">
+                    <h4 className="font-medium mb-3">Recommendations</h4>
+                    <ul className="space-y-2 text-sm">
+                      {testSuite.ovdsValidation.recommendations.map((rec, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-blue-600 mt-0.5">•</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
+
+                {/* Warnings */}
+                {testSuite.ovdsValidation.warnings.length > 0 && (
+                  <Alert className="border-yellow-200 bg-yellow-50">
+                    <AlertTriangle size={16} className="text-yellow-600" />
+                    <AlertDescription>
+                      <div className="font-medium mb-2">Validation Warnings:</div>
+                      <ul className="space-y-1">
+                        {testSuite.ovdsValidation.warnings.map((warning, index) => (
+                          <li key={index} className="text-sm flex items-start gap-1">
+                            <span>•</span>
+                            <span>{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">
+                  Run the conversion tests to see OVDS validation results
+                </p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </CardContent>

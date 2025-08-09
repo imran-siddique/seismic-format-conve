@@ -41,7 +41,7 @@ interface ConversionJob {
 
 function App() {
   const [currentFile, setCurrentFile] = useState<SeismicFile | null>(null)
-  const [targetFormat, setTargetFormat] = useState<string>('HDF5') // Default to HDF5
+  const [targetFormat, setTargetFormat] = useState<string>('OVDS') // Default to OVDS for Azure compatibility
   const [currentJob, setCurrentJob] = useState<ConversionJob | null>(null)
   const [conversionHistory, setConversionHistory] = useKV<ConversionJob[]>('conversion-history', [])
 
@@ -114,9 +114,9 @@ function App() {
         sourceFormat: job.sourceFormat,
         targetFormat: job.targetFormat,
         fileName: job.fileName,
-        compressionLevel: job.targetFormat === 'HDF5' || job.targetFormat === 'ZGY' ? 6 : undefined,
+        compressionLevel: job.targetFormat === 'HDF5' || job.targetFormat === 'ZGY' || job.targetFormat === 'OVDS' ? 6 : undefined,
         preserveMetadata: true,
-        azureCompatible: job.targetFormat === 'ZGY' || job.sourceFormat === 'SEG-Y'
+        azureCompatible: job.targetFormat === 'ZGY' || job.targetFormat === 'OVDS' || job.sourceFormat === 'SEG-Y'
       }
 
       const result = await SeismicConverter.convert(
@@ -133,6 +133,7 @@ function App() {
           type: job.targetFormat === 'JSON' ? 'application/json' : 
                 job.targetFormat === 'CSV' ? 'text/csv' : 
                 job.targetFormat === 'HDF5' ? 'application/x-hdf' :
+                job.targetFormat === 'OVDS' ? 'application/x-vds' :
                 job.targetFormat === 'ZGY' ? 'application/x-zgy' :
                 'application/octet-stream'
         })
@@ -193,6 +194,7 @@ function App() {
     const getFileExtension = (format: string): string => {
       const extensions: Record<string, string> = {
         'HDF5': 'h5',
+        'OVDS': 'vds',
         'JSON': 'json',
         'CSV': 'csv',
         'SEG-Y': 'sgy',
@@ -224,14 +226,14 @@ function App() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Professional Seismic Data Converter</h1>
           <p className="text-muted-foreground">
-            Convert legacy seismic formats to modern standards with Azure Energy Data Services compatibility
+            Convert legacy seismic formats to modern standards with Azure Energy Data Services OVDS optimization
           </p>
           <div className="flex justify-center gap-2 text-sm text-muted-foreground">
-            <span>✓ SEG-Y to ZGY conversion</span>
+            <span>✓ SEG-Y to OVDS conversion</span>
             <span>•</span>
-            <span>✓ Azure validation</span>
+            <span>✓ Azure cloud optimization</span>
             <span>•</span>  
-            <span>✓ HDF5 optimization</span>
+            <span>✓ Streaming-ready format</span>
           </div>
         </div>
 
