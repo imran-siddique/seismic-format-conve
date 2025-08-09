@@ -431,6 +431,8 @@ export class SeismicConverter {
     
     return compressed
   }
+
+  private static async convertToZGY(
     inputData: ArrayBuffer,
     metadata: SeismicMetadata,
     config: ConversionConfig,
@@ -655,7 +657,7 @@ export class SeismicConverter {
       case 'SEG-Y':
         return this.convertToSEGY(inputData, metadata)
       case 'OVDS':
-        return this.convertToOVDS(inputData, metadata)
+        return this.convertToOVDS(inputData, metadata, config, progressCallback)
       case 'ZGY':
         return this.convertToZGY(inputData, metadata)
       case 'NetCDF':
@@ -731,7 +733,7 @@ export class SeismicConverter {
     return { success: true, outputData: data, metadata }
   }
 
-  private static convertToOVDS(data: ArrayBuffer, metadata: SeismicMetadata): ConversionResult {
+  private static convertToOVDS(data: ArrayBuffer, metadata: SeismicMetadata, config?: ConversionConfig, progressCallback?: (progress: number) => void): ConversionResult {
     // OVDS format conversion with cloud optimization
     const float32Data = new Float32Array(data)
     const ovdsStructure = {
@@ -776,6 +778,8 @@ export class SeismicConverter {
       warnings: ['OVDS format optimized for cloud streaming and random access']
     }
   }
+
+  private static convertToZGY(data: ArrayBuffer, metadata: SeismicMetadata): ConversionResult {
     // ZGY format conversion
     const float32Data = new Float32Array(data)
     const zgyData = this.createZGYData(float32Data, {
