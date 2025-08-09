@@ -8,9 +8,14 @@ interface FormatSelectorProps {
 }
 
 const SUPPORTED_FORMATS = [
+  { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format 5 - Primary target', priority: true },
   { value: 'JSON', label: 'JSON', description: 'Web-friendly structured format' },
   { value: 'CSV', label: 'CSV', description: 'Comma-separated values' },
-  { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format' },
+  { value: 'SEG-Y', label: 'SEG-Y', description: 'Society of Exploration Geophysicists Y format' },
+  { value: 'SEG-D', label: 'SEG-D', description: 'SEG field recording format' },
+  { value: 'SU', label: 'Seismic Unix', description: 'Seismic Unix format' },
+  { value: 'UKOOA', label: 'UKOOA', description: 'UK Offshore Operators Association format' },
+  { value: 'NetCDF', label: 'NetCDF', description: 'Network Common Data Form' },
   { value: 'WebGL', label: 'WebGL Buffer', description: 'Optimized for web rendering' },
   { value: 'Binary', label: 'Binary Array', description: 'Compact binary format' }
 ]
@@ -27,7 +32,14 @@ export function FormatSelector({ value, onChange, disabled }: FormatSelectorProp
           {SUPPORTED_FORMATS.map((format) => (
             <SelectItem key={format.value} value={format.value}>
               <div className="flex flex-col">
-                <span className="font-medium">{format.label}</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{format.label}</span>
+                  {format.priority && (
+                    <span className="text-xs bg-accent text-accent-foreground px-1.5 py-0.5 rounded">
+                      Recommended
+                    </span>
+                  )}
+                </div>
                 <span className="text-xs text-muted-foreground">{format.description}</span>
               </div>
             </SelectItem>
