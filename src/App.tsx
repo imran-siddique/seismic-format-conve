@@ -11,6 +11,7 @@ import { FileUploadZone } from '@/components/FileUploadZone'
 import { ConversionHistory } from '@/components/ConversionHistory'
 import { FormatSelector } from '@/components/FormatSelector'
 import { FormatInfo } from '@/components/FormatInfo'
+import { ConversionTest } from '@/components/ConversionTest'
 import { SeismicConverter, type ConversionConfig } from '@/lib/seismicConverter'
 
 interface SeismicFile {
@@ -113,8 +114,9 @@ function App() {
         sourceFormat: job.sourceFormat,
         targetFormat: job.targetFormat,
         fileName: job.fileName,
-        compressionLevel: job.targetFormat === 'HDF5' ? 6 : undefined,
-        preserveMetadata: true
+        compressionLevel: job.targetFormat === 'HDF5' || job.targetFormat === 'ZGY' ? 6 : undefined,
+        preserveMetadata: true,
+        azureCompatible: job.targetFormat === 'ZGY' || job.sourceFormat === 'SEG-Y'
       }
 
       const result = await SeismicConverter.convert(
@@ -131,6 +133,7 @@ function App() {
           type: job.targetFormat === 'JSON' ? 'application/json' : 
                 job.targetFormat === 'CSV' ? 'text/csv' : 
                 job.targetFormat === 'HDF5' ? 'application/x-hdf' :
+                job.targetFormat === 'ZGY' ? 'application/x-zgy' :
                 'application/octet-stream'
         })
         const downloadUrl = URL.createObjectURL(blob)
@@ -195,6 +198,7 @@ function App() {
         'SEG-Y': 'sgy',
         'SEG-D': 'segd',
         'NetCDF': 'nc',
+        'ZGY': 'zgy',
         'Binary': 'bin'
       }
       return extensions[format] || 'dat'
@@ -220,8 +224,15 @@ function App() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Professional Seismic Data Converter</h1>
           <p className="text-muted-foreground">
-            Convert legacy seismic formats (SEG-Y, SEG-D, SU, UKOOA, LAS, DLIS) to modern HDF5 with metadata preservation
+            Convert legacy seismic formats to modern standards with Azure Energy Data Services compatibility
           </p>
+          <div className="flex justify-center gap-2 text-sm text-muted-foreground">
+            <span>✓ SEG-Y to ZGY conversion</span>
+            <span>•</span>
+            <span>✓ Azure validation</span>
+            <span>•</span>  
+            <span>✓ HDF5 optimization</span>
+          </div>
         </div>
 
         {/* Main Conversion Area */}
@@ -304,6 +315,14 @@ function App() {
             fileName={currentFile.name}
           />
         )}
+
+        {/* Conversion Testing Suite */}
+        <ConversionTest 
+          sourceFile={currentFile?.file}
+          onTestComplete={(results) => {
+            console.log('Test suite completed:', results)
+          }}
+        />
 
         {/* Progress & Results */}
         {currentJob && (

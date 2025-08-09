@@ -9,6 +9,7 @@ interface FormatSelectorProps {
 
 const SUPPORTED_FORMATS = [
   { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format 5 - Primary target', priority: true },
+  { value: 'ZGY', label: 'ZGY (Petrel)', description: 'Azure Energy Data Services compatible format', priority: true, azure: true },
   { value: 'JSON', label: 'JSON', description: 'Web-friendly structured format' },
   { value: 'CSV', label: 'CSV', description: 'Comma-separated values' },
   { value: 'SEG-Y', label: 'SEG-Y', description: 'Society of Exploration Geophysicists Y format' },
@@ -34,9 +35,14 @@ export function FormatSelector({ value, onChange, disabled }: FormatSelectorProp
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{format.label}</span>
-                  {format.priority && (
+                  {format.priority && !format.azure && (
                     <span className="text-xs bg-accent text-accent-foreground px-1.5 py-0.5 rounded">
                       Recommended
+                    </span>
+                  )}
+                  {format.azure && (
+                    <span className="text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded">
+                      Azure Compatible
                     </span>
                   )}
                 </div>

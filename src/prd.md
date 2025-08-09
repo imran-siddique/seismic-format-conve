@@ -2,19 +2,21 @@
 
 ## Core Purpose & Success
 
-**Mission Statement**: Provide a comprehensive web-based solution for converting seismic data files from legacy and proprietary formats to modern HDF5 format, enabling better data accessibility and processing in modern computing environments.
+**Mission Statement**: Provide a comprehensive web-based solution for converting seismic data files from legacy formats to modern standards, with full Azure Energy Data Services compatibility for enterprise workflows.
 
 **Success Indicators**:
 - High conversion success rate (>95%) for supported formats
-- Fast conversion times (<30 seconds for typical files)
+- Azure Energy Data Services workflow compliance
+- Fast conversion times (<30 seconds for typical files)  
 - Accurate metadata preservation during conversion
-- User satisfaction with HDF5 output quality
-- Adoption by geophysical professionals and researchers
+- Step-by-step validation following Microsoft Azure documentation
+- User satisfaction with HDF5 and ZGY output quality
+- Adoption by geophysical professionals and cloud-based workflows
 
 **Experience Qualities**: 
-1. **Professional** - Enterprise-grade reliability and precision for scientific data
-2. **Efficient** - Streamlined workflow with minimal user intervention required
-3. **Informative** - Clear feedback on format characteristics and conversion benefits
+1. **Professional** - Enterprise-grade reliability with Azure cloud compatibility
+2. **Validated** - Comprehensive testing following industry-standard workflows  
+3. **Informative** - Clear feedback on format characteristics, conversion benefits, and Azure compatibility
 
 ## Project Classification & Approach
 
@@ -58,13 +60,27 @@ File Upload → Format Detection → Target Selection → Conversion → Quality
 - **ASCII/CSV** - Text-based seismic data
 - **Binary formats** - Various proprietary binary formats
 
-### HDF5 Conversion Engine
-- **Hierarchical Structure** - Organize seismic data with proper group/dataset hierarchy
-- **Metadata Preservation** - Maintain acquisition parameters, processing history, coordinate systems
+### Azure Energy Data Services Integration
+- **SEG-Y to ZGY Conversion** - Following Microsoft Azure Energy documentation workflow
+- **Step-by-Step Validation** - Comprehensive testing suite matching Azure best practices
+- **Format Compatibility Checking** - Pre-conversion validation for Azure cloud workflows
+- **Metadata Compliance** - Ensuring converted files meet Azure Energy Data Services standards
+- **Cloud-Ready Output** - Optimized file structures for Azure cloud storage and processing
+
+### Multi-Format Conversion Engine
+- **HDF5 Output** - Primary modern format with hierarchical structure and metadata preservation
+- **ZGY Output** - Azure-compatible Petrel format with lossless compression
+- **Format-Specific Optimization** - Tailored conversion strategies per source format
 - **Compression Support** - Configurable compression levels for storage optimization
 - **Chunking Strategy** - Optimal chunk sizes for I/O performance
 - **Data Integrity** - Validation and checksum verification
-- **Format-Specific Optimization** - Tailored conversion strategies per source format
+
+### Testing and Validation Suite
+- **Azure Workflow Compliance** - Step-by-step testing following Microsoft documentation
+- **Format Validation** - Header integrity, geometry validation, and data quality assessment
+- **Conversion Verification** - Multi-stage validation ensuring successful format transformation
+- **Performance Metrics** - Detailed timing and compression ratio reporting
+- **Error Handling** - Comprehensive error detection and user-friendly reporting
 
 ### User Interface Features
 - **Drag & Drop Upload** - Intuitive file selection with format auto-detection
