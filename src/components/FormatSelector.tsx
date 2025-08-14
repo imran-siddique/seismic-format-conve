@@ -8,7 +8,7 @@ interface FormatSelectorProps {
 }
 
 const SUPPORTED_FORMATS = [
-  { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format 5 - Primary target', priority: true },
+  { value: 'HDF5', label: 'HDF5', description: 'Hierarchical Data Format 5 - Supports ALL seismic formats!', priority: true, recommended: true },
   { value: 'OVDS', label: 'OVDS (OpenVDS)', description: 'Open Volumetric Data Standard - Azure optimized', priority: true, azure: true },
   { value: 'ZGY', label: 'ZGY (Petrel)', description: 'Azure Energy Data Services compatible format', priority: true, azure: true },
   { value: 'JSON', label: 'JSON', description: 'Web-friendly structured format' },
@@ -36,7 +36,12 @@ export function FormatSelector({ value, onChange, disabled }: FormatSelectorProp
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{format.label}</span>
-                  {format.priority && !format.azure && (
+                  {format.recommended && (
+                    <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded font-semibold">
+                      BEST CHOICE
+                    </span>
+                  )}
+                  {format.priority && !format.azure && !format.recommended && (
                     <span className="text-xs bg-accent text-accent-foreground px-1.5 py-0.5 rounded">
                       Recommended
                     </span>

@@ -31,3 +31,8 @@ packages
 .devcontainer/
 
 .spark-workbench-id
+
+# Test and demo files
+test-hdf5-conversion.js
+demo-hdf5-conversion.js
+validate-format-coverage.js
