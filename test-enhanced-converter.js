@@ -1,5 +1,8 @@
 // Test script demonstrating enhanced seismic conversion capabilities
-import { SeismicConverter } from '../src/lib/seismicConverter'
+// This script demonstrates the enhanced interfaces and functionality
+
+// Note: Import would be: import { SeismicConverter } from './src/lib/seismicConverter'
+// For demo purposes, we'll show the configuration examples
 
 // Test configuration for HDF5 conversion with storage options
 const testConfig = {
@@ -11,7 +14,7 @@ const testConfig = {
   preserveMetadata: true,
   azureCompatible: true,
   storage: {
-    type: 'both' as const,
+    type: 'both',
     localPath: './converted_files',
     azure: {
       accountName: 'seismicdata',
@@ -45,14 +48,14 @@ const allFormatsTest = async () => {
     {
       name: 'Local Storage Only',
       config: {
-        type: 'local' as const,
+        type: 'local',
         localPath: './local_converted'
       }
     },
     {
       name: 'Azure Cloud Storage Only',
       config: {
-        type: 'azure' as const,
+        type: 'azure',
         azure: {
           accountName: 'energydata',
           containerName: 'seismic-hdf5',
@@ -63,7 +66,7 @@ const allFormatsTest = async () => {
     {
       name: 'Hybrid Local + Cloud Storage',
       config: {
-        type: 'both' as const,
+        type: 'both',
         localPath: './hybrid_local',
         azure: {
           accountName: 'energydata',
