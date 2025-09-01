@@ -8,6 +8,19 @@ export interface ConversionConfig {
   chunkSize?: number
   preserveMetadata?: boolean
   azureCompatible?: boolean // For Azure Energy Data Services workflow
+  // Enhanced storage options for local and cloud destinations
+  storage?: {
+    type: 'local' | 'azure' | 'both'
+    localPath?: string
+    azure?: {
+      connectionString?: string
+      containerName?: string
+      blobName?: string
+      accountName?: string
+      accountKey?: string
+      sasToken?: string
+    }
+  }
 }
 
 export interface ConversionResult {
